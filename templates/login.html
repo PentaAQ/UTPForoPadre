@@ -1,0 +1,55 @@
+{% extends 'index.html' %}{% load static %} {% block content %}
+<div class="grid grid-cols-2 h-screen">
+  <div class="flex items-center justify-center">
+    <img src="{% static 'img/utplogo.jpg' %}" alt="logoutplogin" />
+  </div>
+  <div class="flex items-center justify-center flex-col gap-5">
+    <img src="{% static 'img/logo.png' %}" alt="" />
+    <h1 class="text-2xl">¡Hola!</h1>
+    <p>Ingresa tus datos para <span class="font-bold">Iniciar Sesion</span></p>
+    <h3 class="text-3xl font-bold">Iniciar Sesión</h3>
+    <form
+      method="post"
+      action=""
+      class="flex flex-col gap-5 [&>div]:flex [&>div]:flex-col [&>div]:gap-1 w-100 [&>div>label]:font-bold [&>div>label]:text-xl [&>div>input]:border [&>div>input]:rounded"
+    >
+      {%csrf_token%}
+      <div>
+        <label for="codigoutp">CodigoUTP</label>
+        <input
+          type="text"
+          id="codigoutp"
+          placeholder="Ingrese tu codigo UTP"
+          name="codigoutp"
+          required
+          class="px-2 py-1"
+        />
+      </div>
+      <div>
+        <label for="password">Contraseña</label>
+        <input
+          type="password"
+          id="password"
+          placeholder="Ingrese su contraseña"
+          name="password"
+          required
+          class="px-2 py-1"
+        />
+      </div>
+      <div>
+        <button
+          type="submit"
+          class="bg-[#5B36F2] text-white w-full block mr-auto ml-auto rounded py-1 px-2 font-bold tracking-wide"
+        >
+          Ingresar
+        </button>
+      </div>
+      {%for m in messages%} {%if m.tag != 'success'%}
+      <p class="bg-red-600 text-center text-white rounded py-2">{{m}}</p>
+      {%elif m.tag == 'success'%}
+      <p class="bg-green-600 text-center text-white rounded py-2">{{m}}</p>
+      {%endif%} {%endfor%}
+    </form>
+  </div>
+</div>
+{%endblock%}

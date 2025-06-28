@@ -1,0 +1,40 @@
+{% extends 'index.html' %} {% block content %}
+<div class="w-screen h-screen flex">
+  <div class="w-auto">{% include 'navbar.html'%}</div>
+  <main
+    class="flex flex-col items-center bg-gray-100 relative overflow-y-scroll pt-20 w-full"
+  >
+    <h2 class="text-2xl font-bold mb-4  text-center">Configuración de cuenta</h2>
+    <div class="mb-4 text-gray-700">
+      <p><strong>Código UTP:</strong> {{ usuario.username }}</p>
+      <p><strong>Nombre:</strong> {{ usuario.first_name }}</p>
+      <p><strong>Apellido:</strong> {{ usuario.last_name }}</p>
+      <p><strong>Correo:</strong> {{ usuario.email }}</p>
+    </div>
+
+    <hr class="my-4" />
+
+    <h3 class="text-xl font-semibold mb-2">Cambiar contraseña</h3>
+    <form method="post" class="space-y-4">
+      {% csrf_token %} {% for field in form %}
+      <div>
+        <label class="block font-medium text-gray-600"
+          >{{ field.label|capfirst }}:</label
+        >
+        {{ field }} {% if field.errors %}
+        <p class="text-sm text-red-500">{{ field.errors.as_text|striptags }}</p>
+        {% endif %}
+      </div>
+      {% endfor %}
+
+      <button
+        type="submit"
+        class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+      >
+        Actualizar contraseña
+      </button>
+    </form>
+  </main>
+</div>
+
+{%endblock%}

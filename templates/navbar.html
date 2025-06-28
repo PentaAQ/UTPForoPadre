@@ -1,0 +1,59 @@
+{%load static%}{%url 'cerrar_sesion' as cerrarsesion%} {%url 'home' as home%} {%url 'mispublicaciones' as mispublicaciones%} {%url 'configuracionusuario' as configuracionusuario%} {%url 'lista_usuarios' as gesitonusuarios%}
+<div class="overflow-hidden">
+  <div class="flex h-screen">
+    <div
+      id="sidebar"
+      class="bg-[#000f37] w-64 p-4 space-y-6 transition-transform transform md:translate-x-0 -translate-x-full fixed md:relative z-30 h-full"
+    >
+      <div class="flex items-center justify-center">
+        <img
+          src="{%static 'img/logouser.png'%}"
+          alt="logo-user"
+          class="rounded-full w-[100px] bg-amber-50"
+        />
+      </div>
+      <h2 class="text-base font-bold text-center capitalize text-white">
+        Bienvenido, {{user.first_name}} {{user.last_name}}
+      </h2>
+      <nav class="space-y-2 h-full">
+        <a
+          href="{{home}}"
+          class="text-white px-4 py-2 rounded hover:bg-gray-200 hover:text-[#000f37] flex items-center gap-2 transition-all duration-300"
+          ><ion-icon name="home-outline"></ion-icon>Inicio</a
+        >
+        <a
+          href="{{mispublicaciones}}"
+          class="text-white px-4 py-2 rounded hover:bg-gray-200 hover:text-[#000f37] flex items-center gap-2 transition-all duration-300"
+          ><ion-icon name="chatbox-outline"></ion-icon>Mis Publicaciones</a
+        >
+        <a
+          href="{{configuracionusuario}}"
+         class="text-white px-4 py-2 rounded hover:bg-gray-200 hover:text-[#000f37] flex items-center gap-2 transition-all duration-300"
+          ><ion-icon name="settings-outline"></ion-icon>Configuracion</a
+        >
+        {% if user.is_staff %}
+        <a
+          href="{{gesitonusuarios}}"
+          class="text-white px-4 py-2 rounded hover:bg-gray-200 hover:text-[#000f37] flex items-center gap-2 transition-all duration-300"
+          > <ion-icon name="people-circle-outline"></ion-icon> Gestion de Usuarios</a
+        >
+        <a
+          href=""
+          class="text-white px-4 py-2 rounded hover:bg-gray-200 hover:text-[#000f37] flex items-center gap-2 transition-all duration-300"
+          ><ion-icon name="duplicate-outline"></ion-icon> Gestion de Categorias</a
+        >
+        <a
+          href=""
+          class="text-white px-4 py-2 rounded hover:bg-gray-200 hover:text-[#000f37] flex items-center gap-2 transition-all duration-300"
+          ><ion-icon name="clipboard-outline"></ion-icon>Reportes y Estadisticas</a
+        >
+        {% endif %}
+        <a
+          href="{{cerrarsesion}}"
+          class="px-4 py-2 rounded bg-red-600 text-center font-bold text-white absolute bottom-10 w-[80%] mr-auto ml-auto flex items-center gap-2 justify-center"
+          ><ion-icon name="clipboard-outline"></ion-icon>Cerrar Sesion</a
+        >
+      </nav>
+    </div>
+  </div>
+</div>
