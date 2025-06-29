@@ -1,0 +1,7 @@
+{% extends 'index.html' %} {% block content %}
+<form method="POST" enctype="multipart/form-data" action="{% url 'subir_csv' %}">
+  {% csrf_token %}
+  <input type="file" name="archivo_csv" accept=".csv" required>
+  <button type="submit">Subir y crear usuarios</button>
+</form>
+{%endblock%}

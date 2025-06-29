@@ -1,19 +1,21 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.models import User
+from .models import Usuario
 
 class UsuarioEditarForm(forms.ModelForm):
     class Meta:
-        model = User
-        fields = ['username', 'first_name', 'last_name', 'email']
+        model = Usuario
+        fields = ['username', 'dni', 'first_name', 'last_name', 'email']
         labels = {
             'username': 'Nombre de usuario',
+            'dni': 'DNI',
             'first_name': 'Nombre',
             'last_name': 'Apellido',
             'email': 'Correo electrónico',
         }
         widgets = {
             'username': forms.TextInput(attrs={'class': 'border border-gray-300 rounded p-2 w-full'}),
+            'dni': forms.TextInput(attrs={'class': 'border border-gray-300 rounded p-2 w-full'}),
             'first_name': forms.TextInput(attrs={'class': 'border border-gray-300 rounded p-2 w-full'}),
             'last_name': forms.TextInput(attrs={'class': 'border border-gray-300 rounded p-2 w-full'}),
             'email': forms.EmailInput(attrs={'class': 'border border-gray-300 rounded p-2 w-full'}),
@@ -22,6 +24,14 @@ class UsuarioEditarForm(forms.ModelForm):
 
 
 class UsuarioCrearForm(UserCreationForm):
+    dni = forms.RegexField(
+        regex=r'^\d{8}$',
+        label='dni',
+        max_length=8,
+        min_length=8,
+        required=True,
+        widget=forms.TextInput(attrs={'class': 'border border-gray-300 rounded p-2 w-full'})
+    )
     first_name = forms.CharField(
         label='Nombre',
         max_length=30,
@@ -56,8 +66,8 @@ class UsuarioCrearForm(UserCreationForm):
     )
 
     class Meta:
-        model = User
-        fields = ['username', 'first_name', 'last_name', 'email', 'password1', 'password2']
+        model = Usuario
+        fields = ['username', 'dni', 'first_name', 'last_name', 'email', 'password1', 'password2']
         labels = {
             'username': 'Nombre de usuario',
         }

@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
-from .models import Publicaciones
+from .models import Publicaciones, Usuario
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404, redirect
 from .forms import ComentarioForm
@@ -97,3 +97,5 @@ def configuracion_cuenta(request):
         'form': form,
         'usuario': request.user
     })
+
+
