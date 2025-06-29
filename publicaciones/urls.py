@@ -4,7 +4,7 @@ from .views import (
     ProductDetailView,
     nueva_publicacion,
     MisPublicacionesListView,
-    configuracion_cuenta
+    configuracion_cuenta,
 )
 
 urlpatterns = [
@@ -13,5 +13,4 @@ urlpatterns = [
     path('publicacion/<int:pk>/', ProductDetailView.as_view(), name='detalle_publicacion'), 
     path('mis-publicaciones/', MisPublicacionesListView.as_view(), name='mispublicaciones'),
     path('configuracion/', configuracion_cuenta, name='configuracionusuario'),
-
 ]
