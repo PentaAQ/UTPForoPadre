@@ -112,4 +112,16 @@ def nueva_categoria(request):
             return redirect('home')
         else:
             messages.error(request, 'Error al crear la categoria. Por favor, revisa los datos ingresados.')
-    return render(request, 'nueva_categoria.html', {'form': form})
+    return render(request, 'formscategorias.html', {'form': form, 'accion': 'Crear'})
+
+def editar_categoria(request, pk):
+    categoria = get_object_or_404(Categorias, pk=pk)
+    if request.method == 'POST':
+        form = CategoriaForm(request.POST, instance=categoria)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Categoria actualizada correctamente.')
+            return redirect('lista_categorias')
+    else:
+        form = CategoriaForm(instance=categoria)
+    return render(request, 'formscategorias.html', {'form': form, 'accion': 'Editar'})

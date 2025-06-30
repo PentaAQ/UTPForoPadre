@@ -3,11 +3,12 @@
 <div class="w-screen h-screen flex">
   <div class="w-auto">{% include 'navbar.html' %}</div>
   <main class="flex flex-col items-center justify-center w-full p-6 bg-gray-100">
-    <form action="{% url 'nueva_categoria' %}" method="post">
+    <h2 class="text-2xl font-semibold mb-4">{{ accion }} Categoria</h2>
+    <form action="" method="post">
       {% csrf_token %}
       {{ form.as_p }}
       <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">
-        Crear categoria
+        {{ accion }} categoria
       </button>
     </form>
   </main>

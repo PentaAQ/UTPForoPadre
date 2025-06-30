@@ -7,6 +7,7 @@ from .views import (
     configuracion_cuenta,
     lista_categorias,
     nueva_categoria,
+    editar_categoria,
 )
 
 urlpatterns = [
@@ -17,4 +18,5 @@ urlpatterns = [
     path('configuracion/', configuracion_cuenta, name='configuracionusuario'),
     path('publicacion/categorias/', lista_categorias, name='lista_categorias'),
     path('publicacion/categorias/nueva/', nueva_categoria, name='nueva_categoria'), 
+    path('publicacion/categorias/editar/<int:pk>/', editar_categoria, name='editar_categoria'), 
 ]

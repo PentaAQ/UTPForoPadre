@@ -21,7 +21,7 @@
         <td class="border px-4 py-2">{{ categoria.id }}</td>
         <td class="border px-4 py-2">{{ categoria.nombre }}</td>
         <td class="border px-4 py-2">
-          <a href="" class="text-blue-600 hover:underline">Editar</a> |
+          <a href="{% url 'editar_categoria' categoria.id %}" class="text-blue-600 hover:underline">Editar</a> |
           <a href="" class="text-red-600 hover:underline">Eliminar</a>
         </td>
       </tr>
