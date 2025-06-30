@@ -1,12 +1,11 @@
 from django.shortcuts import render
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
-from .models import Publicaciones, Usuario
+from .models import Publicaciones, Usuario, Categorias
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404, redirect
-from .forms import ComentarioForm
+from .forms import ComentarioForm, PublicacionForm, CategoriaForm
 from django.contrib import messages
-from .forms import PublicacionForm
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.decorators import login_required
@@ -99,3 +98,18 @@ def configuracion_cuenta(request):
     })
 
 
+def lista_categorias(request):
+    categorias = Categorias.objects.all()
+    return render(request, 'listacategorias.html', {'categorias': categorias})
+
+def nueva_categoria(request):
+    form = CategoriaForm(request.POST or None)
+    if request.method == 'POST':
+        if form.is_valid():
+            categoria = form.save(commit=False)
+            categoria.save()
+            messages.success(request, 'Categoria creada exitosamente')
+            return redirect('home')
+        else:
+            messages.error(request, 'Error al crear la categoria. Por favor, revisa los datos ingresados.')
+    return render(request, 'nueva_categoria.html', {'form': form})

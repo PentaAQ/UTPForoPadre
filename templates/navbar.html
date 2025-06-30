@@ -1,4 +1,4 @@
-{%load static%}{%url 'cerrar_sesion' as cerrarsesion%} {%url 'home' as home%} {%url 'mispublicaciones' as mispublicaciones%} {%url 'configuracionusuario' as configuracionusuario%} {%url 'lista_usuarios' as gesitonusuarios%}
+{%load static%}{%url 'cerrar_sesion' as cerrarsesion%} {%url 'home' as home%} {%url 'mispublicaciones' as mispublicaciones%} {%url 'configuracionusuario' as configuracionusuario%} {%url 'lista_usuarios' as gesitonusuarios%} {%url 'lista_categorias' as lista_categorias%}
 <div class="overflow-hidden">
   <div class="flex h-screen">
     <div
@@ -38,7 +38,7 @@
           > <ion-icon name="people-circle-outline"></ion-icon> Gestion de Usuarios</a
         >
         <a
-          href=""
+          href="{{lista_categorias}}"
           class="text-white px-4 py-2 rounded hover:bg-gray-200 hover:text-[#000f37] flex items-center gap-2 transition-all duration-300"
           ><ion-icon name="duplicate-outline"></ion-icon> Gestion de Categorias</a
         >
