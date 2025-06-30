@@ -125,3 +125,9 @@ def editar_categoria(request, pk):
     else:
         form = CategoriaForm(instance=categoria)
     return render(request, 'formscategorias.html', {'form': form, 'accion': 'Editar'})
+
+def eliminar_categoria(request, pk):
+    categoria = get_object_or_404(Categorias, pk=pk)
+    categoria.delete()
+    messages.success(request, 'Categoria eliminada.')
+    return redirect('lista_categorias')

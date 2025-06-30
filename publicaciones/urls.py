@@ -8,6 +8,7 @@ from .views import (
     lista_categorias,
     nueva_categoria,
     editar_categoria,
+    eliminar_categoria,
 )
 
 urlpatterns = [
@@ -19,4 +20,5 @@ urlpatterns = [
     path('publicacion/categorias/', lista_categorias, name='lista_categorias'),
     path('publicacion/categorias/nueva/', nueva_categoria, name='nueva_categoria'), 
     path('publicacion/categorias/editar/<int:pk>/', editar_categoria, name='editar_categoria'), 
+    path('publicacion/categorias/eliminar/<int:pk>/', eliminar_categoria, name='eliminar_categoria'),
 ]
