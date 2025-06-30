@@ -39,3 +39,17 @@ class ComentarioForm(forms.ModelForm):
         labels = {
             'contenido': ''
         }
+
+class CategoriaForm(forms.ModelForm):
+    class Meta:
+        model = Categorias
+        fields = ['nombre']
+        labels = {
+            'nombre': 'nombre',
+        }
+        widgets = {
+            'nombre': forms.TextInput(attrs={
+                'class': 'border border-gray-300 rounded-lg p-2 w-full',
+                'placeholder': 'Ingrese el nombre de la categoría'
+            }),
+        }

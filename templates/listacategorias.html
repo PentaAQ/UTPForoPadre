@@ -1,0 +1,36 @@
+{% extends 'index.html' %} {% block content %}
+<div class="w-screen h-screen flex">
+  <div class="w-auto">{% include 'navbar.html'%}</div>
+  
+  <main
+    class="flex flex-col items-center bg-gray-100 relative overflow-y-scroll pt-20 w-full px-10"
+  >
+    <h1 class="text-xl font-bold mb-4">Categorias registradas</h1>
+  <a href="{% url 'nueva_categoria' %}" class="bg-blue-500 text-white px-4 py-2 rounded">+ Crear Categoria</a>
+  <table class="table-auto w-full mt-4 border-collapse border border-gray-300">
+    <thead>
+      <tr>
+        <th class="border px-4 py-2">ID</th>
+        <th class="border px-4 py-2">Nombre</th>
+        <th class="border px-4 py-2">Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for categoria in categorias %}
+      <tr>
+        <td class="border px-4 py-2">{{ categoria.id }}</td>
+        <td class="border px-4 py-2">{{ categoria.nombre }}</td>
+        <td class="border px-4 py-2">
+          <a href="{% url 'editar_categoria' categoria.id %}" class="text-blue-600 hover:underline">Editar</a> |
+          <a href="{% url 'eliminar_categoria' categoria.id %}" class="text-red-600 hover:underline">Eliminar</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  </main>
+</div>
+
+{%endblock%}
+
+
