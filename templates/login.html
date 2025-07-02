@@ -1,55 +1,223 @@
-{% extends 'index.html' %}{% load static %} {% block content %}
-<div class="grid grid-cols-2 h-screen">
-  <div class="flex items-center justify-center">
-    <img src="{% static 'img/utplogo.jpg' %}" alt="logoutplogin" />
+{% extends 'index.html' %} {% load static %} {% block content %}
+
+<div
+  class="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50 relative overflow-hidden"
+>
+  <!-- Elementos decorativos de fondo -->
+  <div
+    class="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none"
+  >
+    <div
+      class="absolute top-20 left-10 w-32 h-32 bg-purple-200 rounded-full opacity-20 animate-pulse"
+    ></div>
+    <div
+      class="absolute top-40 right-20 w-24 h-24 bg-blue-200 rounded-full opacity-30 animate-bounce"
+    ></div>
+    <div
+      class="absolute bottom-20 left-1/4 w-16 h-16 bg-indigo-200 rounded-full opacity-25"
+    ></div>
+    <div
+      class="absolute bottom-40 right-10 w-20 h-20 bg-purple-300 rounded-full opacity-20"
+    ></div>
   </div>
-  <div class="flex items-center justify-center flex-col gap-5">
-    <img src="{% static 'img/logo.png' %}" alt="" />
-    <h1 class="text-2xl">¡Hola!</h1>
-    <p>Ingresa tus datos para <span class="font-bold">Iniciar Sesion</span></p>
-    <h3 class="text-3xl font-bold">Iniciar Sesión</h3>
-    <form
-      method="post"
-      action=""
-      class="flex flex-col gap-5 [&>div]:flex [&>div]:flex-col [&>div]:gap-1 w-100 [&>div>label]:font-bold [&>div>label]:text-xl [&>div>input]:border [&>div>input]:rounded"
+
+  <div class="relative z-10 grid lg:grid-cols-2 h-screen">
+    <!-- Panel izquierdo - Logo y bienvenida -->
+    <div
+      class="hidden lg:flex items-center justify-center bg-white relative"
     >
-      {%csrf_token%}
-      <div>
-        <label for="codigoutp">CodigoUTP</label>
-        <input
-          type="text"
-          id="codigoutp"
-          placeholder="Ingrese tu codigo UTP"
-          name="codigoutp"
-          required
-          class="px-2 py-1"
-        />
+      
+
+      <div class="text-center text-white space-y-8 px-8">
+        <div class="relative">
+          <img
+            src="{% static 'img/utplogo.jpg' %}"
+            alt="Logo UTP"
+            class="mx-auto w-full  rounded-lg"
+          />
+          <div class="absolute -inset-4 bg-white/10 rounded-xl blur-xl"></div>
+        </div>
+
+        
+
+        <!-- Indicadores decorativos -->
+        <div class="flex justify-center space-x-2 pt-8">
+          <div class="w-2 h-2 bg-white rounded-full"></div>
+          <div class="w-2 h-2 bg-white/60 rounded-full"></div>
+          <div class="w-2 h-2 bg-white/30 rounded-full"></div>
+        </div>
       </div>
-      <div>
-        <label for="password">Contraseña</label>
-        <input
-          type="password"
-          id="password"
-          placeholder="Ingrese su contraseña"
-          name="password"
-          required
-          class="px-2 py-1"
-        />
-      </div>
-      <div>
-        <button
-          type="submit"
-          class="bg-[#5B36F2] text-white w-full block mr-auto ml-auto rounded py-1 px-2 font-bold tracking-wide"
+    </div>
+
+    <!-- Panel derecho - Formulario -->
+    <div class="flex items-center justify-center p-8 lg:p-12">
+      <div class="w-full max-w-md space-y-8">
+        <!-- Header del formulario -->
+        <div class="text-center space-y-4">
+          <div class="lg:hidden mb-6">
+            <img
+              src="{% static 'img/logo.png' %}"
+              alt="Logo"
+              class="mx-auto h-16 w-auto"
+            />
+          </div>
+
+          <div class="hidden lg:block">
+            <img
+              src="{% static 'img/logo.png' %}"
+              alt="Logo"
+              class="mx-auto h-15 w-auto mb-4"
+            />
+          </div>
+
+          <h1 class="text-3xl lg:text-4xl font-bold text-gray-900">¡Hola!</h1>
+          <p class="text-gray-600 text-lg">
+            Ingresa tus datos para
+            <span class="font-semibold text-purple-600">Iniciar Sesión</span>
+          </p>
+        </div>
+
+        <!-- Formulario -->
+        <div
+          class="bg-white rounded-2xl shadow-xl border border-gray-100 p-8 space-y-6"
         >
-          Ingresar
-        </button>
+          <div class="text-center">
+            <h3 class="text-2xl font-bold text-gray-900 mb-2">
+              Iniciar Sesión
+            </h3>
+            <div
+              class="w-16 h-1 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-full mx-auto"
+            ></div>
+          </div>
+
+          <form method="post" action="" class="space-y-6">
+            {% csrf_token %}
+
+            <div class="space-y-2">
+              <label
+                for="codigoutp"
+                class="block text-sm font-semibold text-gray-700 mb-2"
+              >
+                📚 Código UTP
+              </label>
+              <div class="relative">
+                <input
+                  type="text"
+                  id="codigoutp"
+                  name="codigoutp"
+                  placeholder="Ingrese tu código UTP"
+                  required
+                  class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:ring-4 focus:ring-purple-100 transition-all duration-200 outline-none text-gray-900 placeholder-gray-400"
+                />
+                <div class="absolute inset-y-0 right-0 flex items-center pr-3">
+                  <div class="w-5 h-5 text-gray-400">👤</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="space-y-2">
+              <label
+                for="password"
+                class="block text-sm font-semibold text-gray-700 mb-2"
+              >
+                🔒 Contraseña
+              </label>
+              <div class="relative">
+                <input
+                  type="password"
+                  id="password"
+                  name="password"
+                  placeholder="Ingrese su contraseña"
+                  required
+                  class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:ring-4 focus:ring-purple-100 transition-all duration-200 outline-none text-gray-900 placeholder-gray-400"
+                />
+                <div class="absolute inset-y-0 right-0 flex items-center pr-3">
+                  <div class="w-5 h-5 text-gray-400">🔑</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Opciones adicionales -->
+            <div class="flex items-center justify-between text-sm">
+              <label class="flex items-center space-x-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  class="w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
+                />
+                <span class="text-gray-600">Recordarme</span>
+              </label>
+              <a
+                href="#"
+                class="text-purple-600 hover:text-purple-700 font-medium transition-colors"
+              >
+                ¿Olvidaste tu contraseña?
+              </a>
+            </div>
+
+            <button
+              type="submit"
+              class="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-bold py-3 px-6 rounded-xl transition-all duration-200 transform hover:scale-105 hover:shadow-lg focus:outline-none focus:ring-4 focus:ring-purple-100"
+            >
+              <span class="flex items-center justify-center space-x-2">
+                <span>Ingresar</span>
+              </span>
+            </button>
+
+            <!-- Mensajes de estado -->
+            {% for m in messages %} {% if m.tag != 'success' %}
+            <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded-r-lg">
+              <div class="flex items-center">
+                <span class="text-red-500 mr-2">⚠️</span>
+                <p class="text-red-700 font-medium">{{ m }}</p>
+              </div>
+            </div>
+            {% elif m.tag == 'success' %}
+            <div
+              class="bg-green-50 border-l-4 border-green-500 p-4 rounded-r-lg"
+            >
+              <div class="flex items-center">
+                <span class="text-green-500 mr-2">✅</span>
+                <p class="text-green-700 font-medium">{{ m }}</p>
+              </div>
+            </div>
+            {% endif %} {% endfor %}
+          </form>
+        </div>
+
+        <!-- Footer del formulario -->
+        <div class="text-center space-y-4">
+          <div class="flex items-center justify-center space-x-4 text-gray-400">
+            <div class="h-px bg-gray-300 flex-1"></div>
+            <span class="text-sm">¿Necesitas ayuda?</span>
+            <div class="h-px bg-gray-300 flex-1"></div>
+          </div>
+
+          <div class="flex justify-center space-x-6 text-sm">
+            <a
+              href="#"
+              class="text-gray-600 hover:text-purple-600 transition-colors"
+              >Soporte Técnico</a
+            >
+            <span class="text-gray-300">|</span>
+            <a
+              href="#"
+              class="text-gray-600 hover:text-purple-600 transition-colors"
+              >Contacto</a
+            >
+          </div>
+        </div>
       </div>
-      {%for m in messages%} {%if m.tag != 'success'%}
-      <p class="bg-red-600 text-center text-white rounded py-2">{{m}}</p>
-      {%elif m.tag == 'success'%}
-      <p class="bg-green-600 text-center text-white rounded py-2">{{m}}</p>
-      {%endif%} {%endfor%}
-    </form>
+    </div>
+  </div>
+
+  <!-- Responsive: Logo móvil en la parte superior -->
+  <div class="lg:hidden absolute top-4 left-4 z-20">
+    <img
+      src="{% static 'img/utplogo.jpg' %}"
+      alt="Logo UTP"
+      class="h-12 w-auto rounded-lg shadow-lg"
+    />
   </div>
 </div>
-{%endblock%}
+
+{% endblock %}

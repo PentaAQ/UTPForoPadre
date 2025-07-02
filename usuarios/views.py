@@ -8,7 +8,15 @@ import csv
 
 def lista_usuarios(request):
     usuarios = Usuario.objects.all()
-    return render(request, 'listarusuarios.html', {'usuarios': usuarios})
+    usuarios_activos = usuarios.filter(is_active=True).count()
+    usuarios_inactivos = usuarios.filter(is_active=False).count()
+    usuarios_staff = usuarios.filter(is_staff=True).count()
+    return render(request, 'listarusuarios.html', {
+        'usuarios': usuarios,
+        'usuarios_activos': usuarios_activos,
+        'usuarios_inactivos': usuarios_inactivos,
+        'usuarios_staff':usuarios_staff,
+    })
 
 
 def crear_usuario(request):

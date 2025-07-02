@@ -9,16 +9,32 @@ from django.contrib import messages
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.decorators import login_required
+from django.db.models import Count
+
 
 # Create your views here.
 class PublicacionesListView(LoginRequiredMixin, ListView):
-    template_name = 'home.html'
-    model = Publicaciones
+    template_name       = 'home.html'
+    model               = Publicaciones
     context_object_name = 'publicaciones'
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['mensaje'] = 'Publicaciones disponibles'
+
+        raw_counts = (
+            self.model.objects
+                .values('categoria__nombre')
+                .annotate(total=Count('categoria'))
+                .order_by('-total')[:3]
+        )
+        top_categories = [
+            {'label': item['categoria__nombre'], 'total': item['total']}
+            for item in raw_counts
+        ]
+        context['top_categories'] = top_categories
         return context
+
     
     
 class ProductDetailView(DetailView):
@@ -28,7 +44,7 @@ class ProductDetailView(DetailView):
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['form'] = ComentarioForm()  # Formulario vacío para el template
+        context['form'] = ComentarioForm()
         context['comentarios'] = self.object.comentarios.all()
         return context
     
