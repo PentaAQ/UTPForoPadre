@@ -1,85 +1,175 @@
 {% extends 'index.html' %}
 {% load static %}
+{# {% load my_filters %} #} {# <-- ELIMINAMOS ESTA LÍNEA, YA NO ES NECESARIA #}
 
 {% block content %}
 <div class="w-screen h-screen flex bg-gray-50">
-    <div class="w-auto">{% include 'navbar.html' %}</div> {# CAMBIADO #}
+    <div class="w-auto">{% include 'navbar.html' %}</div>
     <div class="flex-1 flex flex-col overflow-hidden">
         <header class="bg-white border-b border-gray-200 px-6 py-4 shadow-sm">
             <div class="flex items-center justify-between">
-                <h1 class="text-2xl font-bold text-gray-900">📊 Reportes y Estadísticas uwu</h1>
+                <h1 class="text-2xl font-bold text-gray-900">📊 Dashboard de Estadísticas</h1>
             </div>
         </header>
 
-        <main class="flex-1 overflow-y-auto p-6">
-            <div class="max-w-4xl mx-auto bg-white rounded-xl shadow-lg p-6 mb-8 border border-gray-100">
-                <h2 class="text-xl font-semibold text-gray-800 mb-4">{{ titulo_grafico }}</h2>
-                <div class="relative h-96"> 
-                    <canvas id="publicacionesPorCategoriaChart"></canvas>
+        <main class="flex-1 overflow-y-auto p-6 space-y-8">
+
+            {# --- Contenedor para el gráfico de Publicaciones por Categoría (Barras) --- #}
+            <div class="max-w-4xl mx-auto bg-white rounded-xl shadow-lg p-6 border border-gray-100">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">{{ categoria_titulo_grafico }}</h2>
+                <div class="relative h-96">
+                    <canvas id="{{ categoria_chart_id }}"></canvas>
+                </div>
+                <div class="mt-6">
+                    <h3 class="text-lg font-medium text-gray-700 mb-3">Detalle:</h3>
+                    <ul class="list-disc pl-5 text-gray-700">
+                        {# Iteramos sobre la nueva lista de diccionarios 'categoria_detalles' #}
+                        {% for item in categoria_detalles %} {# <-- CAMBIO AQUÍ #}
+                            <li>{{ item.label }}: {{ item.count }} publicaciones</li> {# <-- CAMBIO AQUÍ #}
+                        {% empty %}
+                            <li>No hay datos de publicaciones por categoría.</li>
+                        {% endfor %}
+                    </ul>
                 </div>
             </div>
 
-            <div class="max-w-4xl mx-auto bg-white rounded-xl shadow-lg p-6 mb-8 border border-gray-100">
-                <h2 class="text-xl font-semibold text-gray-800 mb-4">Detalle de Publicaciones por Categoría</h2>
-                <ul class="list-disc pl-5 text-gray-700">
-                    {% for label in labels %}
-                        <li>{{ label }}: {{ data.forloop.counter0 }} publicaciones</li>
-                    {% empty %}
-                        <li>No hay datos de publicaciones para mostrar.</li>
-                    {% endfor %}
-                </ul>
+            {# --- Contenedor para el gráfico de Publicaciones por Mes (Circular/Pastel) --- #}
+            <div class="max-w-4xl mx-auto bg-white rounded-xl shadow-lg p-6 border border-gray-100">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">{{ mes_titulo_grafico }}</h2>
+                <div class="relative h-96">
+                    <canvas id="{{ mes_chart_id }}"></canvas>
+                </div>
+                <div class="mt-6">
+                    <h3 class="text-lg font-medium text-gray-700 mb-3">Detalle:</h3>
+                    <ul class="list-disc pl-5 text-gray-700">
+                        {# Iteramos sobre la nueva lista de diccionarios 'mes_detalles' #}
+                        {% for item in mes_detalles %} {# <-- CAMBIO AQUÍ #}
+                            <li>{{ item.label }}: {{ item.count }} publicaciones</li> {# <-- CAMBIO AQUÍ #}
+                        {% empty %}
+                            <li>No hay datos de publicaciones por mes.</li>
+                        {% endfor %}
+                    </ul>
+                </div>
             </div>
 
         </main>
     </div>
 </div>
 
+{# ------------------------------------------------------------------------------------------------ #}
+{# IMPORTO LOS DATOS JSON GENERADOS POR DJANGO EN TAGS SCRIPT OCULTOS #}
+{# ESTO ES CRUCIAL PARA QUE getChartDataFromScript FUNCIONE CORRECTAMENTE #}
+{# ------------------------------------------------------------------------------------------------ #}
+{{ categoria_labels|json_script:"categoria_labels_json" }}
+{{ categoria_data|json_script:"categoria_data_json" }}
+{{ categoria_colors|json_script:"categoria_colors_json" }}
+
+{{ mes_labels|json_script:"mes_labels_json" }}
+{{ mes_data|json_script:"mes_data_json" }}
+{{ mes_colors|json_script:"mes_colors_json" }}
+{# ------------------------------------------------------------------------------------------------ #}
+
+
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        const ctx = document.getElementById('publicacionesPorCategoriaChart').getContext('2d');
-
-        
-        const labels = {{ labels|safe }};
-        const data = {{ data|safe }};
-        const backgroundColors = {{ background_colors|safe }};
-
-        // Creacion del primer grafico
-        new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: 'Número de Publicaciones', 
-                    data: data,
-                    backgroundColor: backgroundColors,
-                    // Borde un poco más oscuro para cada barra
-                    borderColor: backgroundColors.map(color => color.replace('0.7', '1')),
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false, 
-                scales: {
-                    y: {
-                        beginAtZero: true, 
-                        ticks: {
-                            precision: 0 
-                        }
-                    }
-                },
-                plugins: {
-                    legend: {
-                        display: true, 
-                        position: 'top', 
-                    },
-                    title: {
-                        display: true,
-                        text: '{{ titulo_grafico|safe }}'
-                    }
+        // Función para leer los datos del script JSON y parsearlos
+        function getChartDataFromScript(scriptId) {
+            const scriptElement = document.getElementById(scriptId);
+            if (scriptElement) {
+                try {
+                    return JSON.parse(scriptElement.textContent);
+                } catch (e) {
+                    console.error(`Error al parsear JSON del script con ID ${scriptId}:`, e);
+                    return [];
                 }
             }
-        });
+            console.warn(`Elemento script con ID ${scriptId} no encontrado.`);
+            return [];
+        }
+
+        // Datos para el gráfico de Categorías
+        const categoriaChartInfo = {
+            id: "{{ categoria_chart_id }}",
+            type: "{{ categoria_chart_type }}",
+            title: "{{ categoria_titulo_grafico|escapejs }}",
+            labels: getChartDataFromScript("categoria_labels_json"),
+            data: getChartDataFromScript("categoria_data_json"),
+            colors: getChartDataFromScript("categoria_colors_json")
+        };
+
+        // Datos para el gráfico de Meses
+        const mesChartInfo = {
+            id: "{{ mes_chart_id }}",
+            type: "{{ mes_chart_type }}",
+            title: "{{ mes_titulo_grafico|escapejs }}",
+            labels: getChartDataFromScript("mes_labels_json"),
+            data: getChartDataFromScript("mes_data_json"),
+            colors: getChartDataFromScript("mes_colors_json")
+        };
+
+        // Función para inicializar un gráfico de Chart.js
+        function initializeChart(chartInfo) {
+            const ctx = document.getElementById(chartInfo.id);
+            if (!ctx) {
+                console.error(`Elemento canvas con ID ${chartInfo.id} no encontrado.`);
+                return;
+            }
+
+            // Determinar el label del dataset basado en el tipo de gráfico
+            let datasetLabel = chartInfo.title;
+            if (chartInfo.type === 'bar') {
+                datasetLabel = ''; // <-- CAMBIO AQUÍ: Para el gráfico de barras, el label del dataset será vacío
+            }
+
+            new Chart(ctx.getContext('2d'), {
+                type: chartInfo.type,
+                data: {
+                    labels: chartInfo.labels,
+                    datasets: [{
+                        label: datasetLabel, // <-- USAMOS LA VARIABLE datasetLabel AQUÍ
+                        data: chartInfo.data,
+                        backgroundColor: chartInfo.colors,
+                        borderColor: chartInfo.colors.map(color => color.replace('0.7', '1')),
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                precision: 0
+                            },
+                            display: chartInfo.type !== 'pie' && chartInfo.type !== 'doughnut'
+                        },
+                        x: {
+                            display: chartInfo.type !== 'pie' && chartInfo.type !== 'doughnut'
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top',
+                            // <-- AÑADIDO: FILTRA la entrada de la leyenda si el label es vacío (para barras)
+                            labels: {
+                                filter: function(legendItem, chartData) {
+                                    return legendItem.text !== '';
+                                }
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: chartInfo.title
+                        }
+                    }
+                }
+            });
+        }
+
+        initializeChart(categoriaChartInfo);
+        initializeChart(mesChartInfo);
     });
 </script>
 {% endblock %}
