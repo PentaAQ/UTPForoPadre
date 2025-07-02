@@ -9,19 +9,19 @@ from django.contrib import messages
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.decorators import login_required
-from django.db.models import Count
-
+from django.db.models import Count # Ya la tenías, excelente
 
 # Create your views here.
 class PublicacionesListView(LoginRequiredMixin, ListView):
-    template_name       = 'home.html'
-    model               = Publicaciones
+    template_name         = 'home.html'
+    model                 = Publicaciones
     context_object_name = 'publicaciones'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['mensaje'] = 'Publicaciones disponibles'
 
+        # Esta parte ya la tenías y está bien para el sidebar
         raw_counts = (
             self.model.objects
                 .values('categoria__nombre')
@@ -35,19 +35,17 @@ class PublicacionesListView(LoginRequiredMixin, ListView):
         context['top_categories'] = top_categories
         return context
 
-    
-    
 class ProductDetailView(DetailView):
     template_name = 'publicacion.html'
     model = Publicaciones
     context_object_name = 'publicacion'
-    
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['form'] = ComentarioForm()
         context['comentarios'] = self.object.comentarios.all()
         return context
-    
+
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
         form = ComentarioForm(request.POST)
@@ -75,9 +73,6 @@ def nueva_publicacion(request):
             messages.error(request, 'Error al crear la publicación. Por favor, revisa los datos ingresados.')
     return render(request, 'nueva_publicacion.html', {'form': form})
 
-    
-    
-    
 class MisPublicacionesListView(LoginRequiredMixin, ListView):
     template_name = 'mispublicaciones.html'
     model = Publicaciones
@@ -90,9 +85,6 @@ class MisPublicacionesListView(LoginRequiredMixin, ListView):
         context = super().get_context_data(**kwargs)
         context['mensaje'] = 'Mis publicaciones'
         return context
-    
-    
-
 
 @login_required
 def configuracion_cuenta(request):
@@ -107,12 +99,11 @@ def configuracion_cuenta(request):
             messages.error(request, 'Por favor corrige los errores.')
     else:
         form = PasswordChangeForm(user=request.user)
-    
+
     return render(request, 'configuracion.html', {
         'form': form,
         'usuario': request.user
     })
-
 
 def lista_categorias(request):
     categorias = Categorias.objects.all()
@@ -138,6 +129,8 @@ def editar_categoria(request, pk):
             form.save()
             messages.success(request, 'Categoria actualizada correctamente.')
             return redirect('lista_categorias')
+        else:
+            messages.error(request, 'Error al actualizar la categoría. Por favor, revisa los datos ingresados.')
     else:
         form = CategoriaForm(instance=categoria)
     return render(request, 'formscategorias.html', {'form': form, 'accion': 'Editar'})
@@ -147,3 +140,44 @@ def eliminar_categoria(request, pk):
     categoria.delete()
     messages.success(request, 'Categoria eliminada.')
     return redirect('lista_categorias')
+
+
+# CONF DE LAS ESTADISTICAS
+
+@login_required 
+def estadisticas_publicaciones_por_categoria(request):
+    publicaciones_por_categoria = Publicaciones.objects \
+                                            .values('categoria__nombre') \
+                                            .annotate(total=Count('id')) \
+                                            .order_by('categoria__nombre')
+
+    labels = []
+    data = []
+    background_colors = []
+
+    colores_base = [                # COLORES 
+        'rgba(255, 99, 132, 0.7)',  # Rojo
+        'rgba(54, 162, 235, 0.7)', # Azul
+        'rgba(255, 206, 86, 0.7)', # Amarillo
+        'rgba(75, 192, 192, 0.7)', # Verde
+        'rgba(153, 102, 255, 0.7)',# Púrpura
+        'rgba(255, 159, 64, 0.7)', # Naranja
+        'rgba(199, 199, 199, 0.7)',# Gris
+        'rgba(83, 102, 255, 0.7)', # Azul claro
+        'rgba(255, 59, 128, 0.7)', # Rosa
+        'rgba(100, 200, 100, 0.7)',# Verde claro
+    ]
+
+    for i, item in enumerate(publicaciones_por_categoria):
+        labels.append(item['categoria__nombre'])
+        data.append(item['total'])
+        background_colors.append(colores_base[i % len(colores_base)])
+
+    context = {
+        'labels': labels,
+        'data': data,
+        'background_colors': background_colors,
+        'titulo_grafico': 'Publicaciones por Categoría',
+    }
+
+    return render(request, 'estadisticas_publicaciones_por_categoria.html', context)
