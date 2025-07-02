@@ -13,7 +13,9 @@ from django.db.models import Count
 import random
 from django.db.models.functions import ExtractMonth
 from django.utils import timezone
-
+from django.http import HttpResponse
+from openpyxl import Workbook
+from openpyxl.styles import Font, Alignment, Border, Side
 
 class PublicacionesListView(LoginRequiredMixin, ListView):
     template_name         = 'home.html'
@@ -23,7 +25,6 @@ class PublicacionesListView(LoginRequiredMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['mensaje'] = 'Publicaciones disponibles'
-
 
         raw_counts = (
             self.model.objects
@@ -178,7 +179,7 @@ def estadisticas_publicaciones_por_categoria(request):
         categoria_labels.append(label)
         categoria_data.append(count)
         categoria_colors.append(colores_base_categorias[i % len(colores_base_categorias)])
-        categoria_detalles.append({'label': label, 'count': count}) 
+        categoria_detalles.append({'label': label, 'count': count})
 
 
     # Para segundo grafico
@@ -214,10 +215,9 @@ def estadisticas_publicaciones_por_categoria(request):
         g = random.randint(0, 255)
         b = random.randint(0, 255)
         mes_colors.append(f'rgba({r}, {g}, {b}, 0.7)')
-        mes_detalles.append({'label': label, 'count': count}) 
+        mes_detalles.append({'label': label, 'count': count})
 
 
-    
     context = {
         # Datos para el gráfico de Categorías
         'categoria_titulo_grafico': 'Publicaciones por Categoría',
@@ -226,7 +226,7 @@ def estadisticas_publicaciones_por_categoria(request):
         'categoria_colors': categoria_colors,
         'categoria_chart_id': 'publicacionesPorCategoriaChart',
         'categoria_chart_type': 'bar',
-        'categoria_detalles': categoria_detalles, 
+        'categoria_detalles': categoria_detalles,
 
         # Datos para el gráfico de Meses
         'mes_titulo_grafico': f'Publicaciones por Mes ({current_year})',
@@ -239,3 +239,86 @@ def estadisticas_publicaciones_por_categoria(request):
     }
 
     return render(request, 'estadisticas_publicaciones_por_categoria.html', context)
+
+
+# USANDO OPENPYXL PARA EXPORTACION
+@login_required
+def exportar_estadisticas_excel(request):
+    # Crear un nuevo libro de trabajo de Excel
+    workbook = Workbook()
+
+    # --- Hoja 1: Publicaciones por Categoría ---
+    sheet_categoria = workbook.active
+    sheet_categoria.title = "Publicaciones por Categoría"
+
+    # Encabezados
+    headers_categoria = ["Categoría", "Total de Publicaciones"]
+    sheet_categoria.append(headers_categoria)
+
+    # Estilo para encabezados
+    header_font = Font(bold=True)
+    for cell in sheet_categoria[1]:
+        cell.font = header_font
+        cell.alignment = Alignment(horizontal="center", vertical="center")
+        cell.border = Border(left=Side(style='thin'), right=Side(style='thin'), top=Side(style='thin'), bottom=Side(style='thin'))
+
+    # Ancho de columnas
+    sheet_categoria.column_dimensions['A'].width = 30
+    sheet_categoria.column_dimensions['B'].width = 25
+
+    # Obtener datos de publicaciones por categoría (misma lógica que en la vista del dashboard)
+    publicaciones_por_categoria_query = Publicaciones.objects \
+                                                .values('categoria__nombre') \
+                                                .annotate(total=Count('id')) \
+                                                .order_by('categoria__nombre')
+
+    # Añadir datos a la hoja
+    for item in publicaciones_por_categoria_query:
+        sheet_categoria.append([item['categoria__nombre'], item['total']])
+        # Opcional: Estilo para las celdas de datos
+        for cell in sheet_categoria[sheet_categoria.max_row]:
+            cell.border = Border(left=Side(style='thin'), right=Side(style='thin'), top=Side(style='thin'), bottom=Side(style='thin'))
+
+
+    sheet_mes = workbook.create_sheet("Publicaciones por Mes")
+
+    headers_mes = ["Mes", "Total de Publicaciones"]
+    sheet_mes.append(headers_mes)
+
+    # Estilo para encabezados
+    for cell in sheet_mes[1]:
+        cell.font = header_font
+        cell.alignment = Alignment(horizontal="center", vertical="center")
+        cell.border = Border(left=Side(style='thin'), right=Side(style='thin'), top=Side(style='thin'), bottom=Side(style='thin'))
+
+    sheet_mes.column_dimensions['A'].width = 20
+    sheet_mes.column_dimensions['B'].width = 25
+
+    current_year = timezone.now().year
+    publicaciones_por_mes_query = Publicaciones.objects.filter(
+        fecha_creacion__year=current_year
+    ).annotate(
+        month=ExtractMonth('fecha_creacion')
+    ).values('month').annotate(
+        count=Count('id')
+    ).order_by('month')
+
+    nombres_meses = {
+        1: 'Enero', 2: 'Febrero', 3: 'Marzo', 4: 'Abril',
+        5: 'Mayo', 6: 'Junio', 7: 'Julio', 8: 'Agosto',
+        9: 'Septiembre', 10: 'Octubre', 11: 'Noviembre', 12: 'Diciembre'
+    }
+    monthly_data_map = {item['month']: item['count'] for item in publicaciones_por_mes_query}
+
+    for i in range(1, 13):
+        mes_nombre = nombres_meses.get(i, f'Mes {i}')
+        count = monthly_data_map.get(i, 0)
+        sheet_mes.append([mes_nombre, count])
+        for cell in sheet_mes[sheet_mes.max_row]:
+            cell.border = Border(left=Side(style='thin'), right=Side(style='thin'), top=Side(style='thin'), bottom=Side(style='thin'))
+
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = 'attachment; filename=estadisticas_publicaciones.xlsx'
+
+    workbook.save(response)
+    return response

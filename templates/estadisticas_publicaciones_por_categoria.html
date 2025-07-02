@@ -1,7 +1,5 @@
 {% extends 'index.html' %}
 {% load static %}
-
-
 {% block content %}
 <div class="w-screen h-screen flex bg-gray-50">
     <div class="w-auto">{% include 'navbar.html' %}</div>
@@ -13,7 +11,15 @@
         </header>
 
         <main class="flex-1 overflow-y-auto p-6 space-y-8">
-
+            <a href="{% url 'exportar_estadisticas_excel' %}"
+                class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                <svg class="-ml-1 mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+                    fill="currentColor" aria-hidden="true">
+                    <path fill-rule="evenodd" d="M10 2a8 8 0 100 16A8 8 0 0010 2zm1 11H9v-2h2v2zm0-4H9V7h2v2z"
+                        clip-rule="evenodd" />
+                </svg>
+                Exportar a Excel
+            </a>
             {# --- Contenedor para el gráfico de Publicaciones por Categoría (primer grafico xd) --- #}
             <div class="max-w-4xl mx-auto bg-white rounded-xl shadow-lg p-6 border border-gray-100">
                 <h2 class="text-xl font-semibold text-gray-800 mb-4">{{ categoria_titulo_grafico }}</h2>
@@ -25,9 +31,9 @@
                     <ul class="list-disc pl-5 text-gray-700">
                         {# iteracion sobre la nueva lista de diccionarios 'categoria_detalles' #}
                         {% for item in categoria_detalles %}
-                            <li>{{ item.label }}: {{ item.count }} publicaciones</li> 
+                        <li>{{ item.label }}: {{ item.count }} publicaciones</li>
                         {% empty %}
-                            <li>No hay datos de publicaciones por categoría.</li>
+                        <li>No hay datos de publicaciones por categoría.</li>
                         {% endfor %}
                     </ul>
                 </div>
@@ -44,9 +50,9 @@
                     <ul class="list-disc pl-5 text-gray-700">
                         {# iteracion sobre la nueva lista de diccionarios 'mes_detalles' #}
                         {% for item in mes_detalles %}
-                            <li>{{ item.label }}: {{ item.count }} publicaciones</li>
+                        <li>{{ item.label }}: {{ item.count }} publicaciones</li>
                         {% empty %}
-                            <li>No hay datos de publicaciones por mes.</li>
+                        <li>No hay datos de publicaciones por mes.</li>
                         {% endfor %}
                     </ul>
                 </div>
@@ -68,7 +74,7 @@
 
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         // Función para leer los datos del script JSON y parsearlos
         function getChartDataFromScript(scriptId) {
             const scriptElement = document.getElementById(scriptId);
@@ -150,7 +156,7 @@
                             display: true,
                             position: 'top',
                             labels: {
-                                filter: function(legendItem, chartData) {
+                                filter: function (legendItem, chartData) {
                                     return legendItem.text !== '';
                                 }
                             }
