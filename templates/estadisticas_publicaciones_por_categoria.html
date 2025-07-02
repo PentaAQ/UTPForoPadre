@@ -1,6 +1,6 @@
 {% extends 'index.html' %}
 {% load static %}
-{# {% load my_filters %} #} {# <-- ELIMINAMOS ESTA LÍNEA, YA NO ES NECESARIA #}
+
 
 {% block content %}
 <div class="w-screen h-screen flex bg-gray-50">
@@ -14,7 +14,7 @@
 
         <main class="flex-1 overflow-y-auto p-6 space-y-8">
 
-            {# --- Contenedor para el gráfico de Publicaciones por Categoría (Barras) --- #}
+            {# --- Contenedor para el gráfico de Publicaciones por Categoría (primer grafico xd) --- #}
             <div class="max-w-4xl mx-auto bg-white rounded-xl shadow-lg p-6 border border-gray-100">
                 <h2 class="text-xl font-semibold text-gray-800 mb-4">{{ categoria_titulo_grafico }}</h2>
                 <div class="relative h-96">
@@ -23,9 +23,9 @@
                 <div class="mt-6">
                     <h3 class="text-lg font-medium text-gray-700 mb-3">Detalle:</h3>
                     <ul class="list-disc pl-5 text-gray-700">
-                        {# Iteramos sobre la nueva lista de diccionarios 'categoria_detalles' #}
-                        {% for item in categoria_detalles %} {# <-- CAMBIO AQUÍ #}
-                            <li>{{ item.label }}: {{ item.count }} publicaciones</li> {# <-- CAMBIO AQUÍ #}
+                        {# iteracion sobre la nueva lista de diccionarios 'categoria_detalles' #}
+                        {% for item in categoria_detalles %}
+                            <li>{{ item.label }}: {{ item.count }} publicaciones</li> 
                         {% empty %}
                             <li>No hay datos de publicaciones por categoría.</li>
                         {% endfor %}
@@ -33,7 +33,7 @@
                 </div>
             </div>
 
-            {# --- Contenedor para el gráfico de Publicaciones por Mes (Circular/Pastel) --- #}
+            {# --- Contenedor para el gráfico de Publicaciones por Mes (segundo grafico xd) #}
             <div class="max-w-4xl mx-auto bg-white rounded-xl shadow-lg p-6 border border-gray-100">
                 <h2 class="text-xl font-semibold text-gray-800 mb-4">{{ mes_titulo_grafico }}</h2>
                 <div class="relative h-96">
@@ -42,9 +42,9 @@
                 <div class="mt-6">
                     <h3 class="text-lg font-medium text-gray-700 mb-3">Detalle:</h3>
                     <ul class="list-disc pl-5 text-gray-700">
-                        {# Iteramos sobre la nueva lista de diccionarios 'mes_detalles' #}
-                        {% for item in mes_detalles %} {# <-- CAMBIO AQUÍ #}
-                            <li>{{ item.label }}: {{ item.count }} publicaciones</li> {# <-- CAMBIO AQUÍ #}
+                        {# iteracion sobre la nueva lista de diccionarios 'mes_detalles' #}
+                        {% for item in mes_detalles %}
+                            <li>{{ item.label }}: {{ item.count }} publicaciones</li>
                         {% empty %}
                             <li>No hay datos de publicaciones por mes.</li>
                         {% endfor %}
@@ -56,10 +56,7 @@
     </div>
 </div>
 
-{# ------------------------------------------------------------------------------------------------ #}
-{# IMPORTO LOS DATOS JSON GENERADOS POR DJANGO EN TAGS SCRIPT OCULTOS #}
-{# ESTO ES CRUCIAL PARA QUE getChartDataFromScript FUNCIONE CORRECTAMENTE #}
-{# ------------------------------------------------------------------------------------------------ #}
+
 {{ categoria_labels|json_script:"categoria_labels_json" }}
 {{ categoria_data|json_script:"categoria_data_json" }}
 {{ categoria_colors|json_script:"categoria_colors_json" }}
@@ -67,7 +64,7 @@
 {{ mes_labels|json_script:"mes_labels_json" }}
 {{ mes_data|json_script:"mes_data_json" }}
 {{ mes_colors|json_script:"mes_colors_json" }}
-{# ------------------------------------------------------------------------------------------------ #}
+
 
 
 <script>
@@ -118,7 +115,7 @@
             // Determinar el label del dataset basado en el tipo de gráfico
             let datasetLabel = chartInfo.title;
             if (chartInfo.type === 'bar') {
-                datasetLabel = ''; // <-- CAMBIO AQUÍ: Para el gráfico de barras, el label del dataset será vacío
+                datasetLabel = '';
             }
 
             new Chart(ctx.getContext('2d'), {
@@ -126,7 +123,7 @@
                 data: {
                     labels: chartInfo.labels,
                     datasets: [{
-                        label: datasetLabel, // <-- USAMOS LA VARIABLE datasetLabel AQUÍ
+                        label: datasetLabel,
                         data: chartInfo.data,
                         backgroundColor: chartInfo.colors,
                         borderColor: chartInfo.colors.map(color => color.replace('0.7', '1')),
@@ -152,7 +149,6 @@
                         legend: {
                             display: true,
                             position: 'top',
-                            // <-- AÑADIDO: FILTRA la entrada de la leyenda si el label es vacío (para barras)
                             labels: {
                                 filter: function(legendItem, chartData) {
                                     return legendItem.text !== '';

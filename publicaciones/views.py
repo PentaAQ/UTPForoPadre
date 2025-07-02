@@ -1,9 +1,7 @@
-# publicaciones/views.py
-
 from django.shortcuts import render
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
-from .models import Publicaciones, Usuario, Categorias # <-- VERIFICA ESTAS IMPORTACIONES SEGÚN TUS MODELOS
+from .models import Publicaciones, Usuario, Categorias
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404, redirect
 from .forms import ComentarioForm, PublicacionForm, CategoriaForm
@@ -17,7 +15,6 @@ from django.db.models.functions import ExtractMonth
 from django.utils import timezone
 
 
-# Create your views here.
 class PublicacionesListView(LoginRequiredMixin, ListView):
     template_name         = 'home.html'
     model                 = Publicaciones
@@ -151,7 +148,7 @@ def eliminar_categoria(request, pk):
 # CONF DE LAS ESTADISTICAS
 @login_required
 def estadisticas_publicaciones_por_categoria(request):
-    # --- Lógica para el gráfico de Publicaciones por Categoría (Barras) ---
+    # Primer grafico logica
     publicaciones_por_categoria_query = Publicaciones.objects \
                                                 .values('categoria__nombre') \
                                                 .annotate(total=Count('id')) \
@@ -160,7 +157,7 @@ def estadisticas_publicaciones_por_categoria(request):
     categoria_labels = []
     categoria_data = []
     categoria_colors = []
-    categoria_detalles = [] # <-- AÑADIDO
+    categoria_detalles = []
 
     colores_base_categorias = [
         'rgba(255, 99, 132, 0.7)',
@@ -181,10 +178,10 @@ def estadisticas_publicaciones_por_categoria(request):
         categoria_labels.append(label)
         categoria_data.append(count)
         categoria_colors.append(colores_base_categorias[i % len(colores_base_categorias)])
-        categoria_detalles.append({'label': label, 'count': count}) # <-- AÑADIDO
+        categoria_detalles.append({'label': label, 'count': count}) 
 
 
-    # --- Lógica para el gráfico de Publicaciones por Mes (Circular/Pastel) ---
+    # Para segundo grafico
     current_year = timezone.now().year
     publicaciones_por_mes_query = Publicaciones.objects.filter(
         fecha_creacion__year=current_year
@@ -197,7 +194,7 @@ def estadisticas_publicaciones_por_categoria(request):
     mes_labels = []
     mes_data = []
     mes_colors = []
-    mes_detalles = [] # <-- AÑADIDO
+    mes_detalles = []
 
     nombres_meses = {
         1: 'Enero', 2: 'Febrero', 3: 'Marzo', 4: 'Abril',
@@ -217,10 +214,10 @@ def estadisticas_publicaciones_por_categoria(request):
         g = random.randint(0, 255)
         b = random.randint(0, 255)
         mes_colors.append(f'rgba({r}, {g}, {b}, 0.7)')
-        mes_detalles.append({'label': label, 'count': count}) # <-- AÑADIDO
+        mes_detalles.append({'label': label, 'count': count}) 
 
 
-    # --- Combinar todos los datos en el contexto para el template ---
+    
     context = {
         # Datos para el gráfico de Categorías
         'categoria_titulo_grafico': 'Publicaciones por Categoría',
@@ -229,7 +226,7 @@ def estadisticas_publicaciones_por_categoria(request):
         'categoria_colors': categoria_colors,
         'categoria_chart_id': 'publicacionesPorCategoriaChart',
         'categoria_chart_type': 'bar',
-        'categoria_detalles': categoria_detalles, # <-- AÑADIDO AL CONTEXTO
+        'categoria_detalles': categoria_detalles, 
 
         # Datos para el gráfico de Meses
         'mes_titulo_grafico': f'Publicaciones por Mes ({current_year})',
@@ -238,7 +235,7 @@ def estadisticas_publicaciones_por_categoria(request):
         'mes_colors': mes_colors,
         'mes_chart_id': 'publicacionesPorMesChart',
         'mes_chart_type': 'pie',
-        'mes_detalles': mes_detalles, # <-- AÑADIDO AL CONTEXTO
+        'mes_detalles': mes_detalles,
     }
 
     return render(request, 'estadisticas_publicaciones_por_categoria.html', context)
