@@ -10,12 +10,16 @@ from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count
+import random
+from django.db.models.functions import ExtractMonth
+from django.utils import timezone
+from django.http import HttpResponse
+from openpyxl import Workbook
+from openpyxl.styles import Font, Alignment, Border, Side
 
-
-# Create your views here.
 class PublicacionesListView(LoginRequiredMixin, ListView):
-    template_name       = 'home.html'
-    model               = Publicaciones
+    template_name         = 'home.html'
+    model                 = Publicaciones
     context_object_name = 'publicaciones'
 
     def get_context_data(self, **kwargs):
@@ -35,19 +39,17 @@ class PublicacionesListView(LoginRequiredMixin, ListView):
         context['top_categories'] = top_categories
         return context
 
-    
-    
 class ProductDetailView(DetailView):
     template_name = 'publicacion.html'
     model = Publicaciones
     context_object_name = 'publicacion'
-    
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['form'] = ComentarioForm()
         context['comentarios'] = self.object.comentarios.all()
         return context
-    
+
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
         form = ComentarioForm(request.POST)
@@ -75,9 +77,6 @@ def nueva_publicacion(request):
             messages.error(request, 'Error al crear la publicación. Por favor, revisa los datos ingresados.')
     return render(request, 'nueva_publicacion.html', {'form': form})
 
-    
-    
-    
 class MisPublicacionesListView(LoginRequiredMixin, ListView):
     template_name = 'mispublicaciones.html'
     model = Publicaciones
@@ -90,9 +89,6 @@ class MisPublicacionesListView(LoginRequiredMixin, ListView):
         context = super().get_context_data(**kwargs)
         context['mensaje'] = 'Mis publicaciones'
         return context
-    
-    
-
 
 @login_required
 def configuracion_cuenta(request):
@@ -107,12 +103,11 @@ def configuracion_cuenta(request):
             messages.error(request, 'Por favor corrige los errores.')
     else:
         form = PasswordChangeForm(user=request.user)
-    
+
     return render(request, 'configuracion.html', {
         'form': form,
         'usuario': request.user
     })
-
 
 def lista_categorias(request):
     categorias = Categorias.objects.all()
@@ -138,6 +133,8 @@ def editar_categoria(request, pk):
             form.save()
             messages.success(request, 'Categoria actualizada correctamente.')
             return redirect('lista_categorias')
+        else:
+            messages.error(request, 'Error al actualizar la categoría. Por favor, revisa los datos ingresados.')
     else:
         form = CategoriaForm(instance=categoria)
     return render(request, 'formscategorias.html', {'form': form, 'accion': 'Editar'})
@@ -147,3 +144,181 @@ def eliminar_categoria(request, pk):
     categoria.delete()
     messages.success(request, 'Categoria eliminada.')
     return redirect('lista_categorias')
+
+
+# CONF DE LAS ESTADISTICAS
+@login_required
+def estadisticas_publicaciones_por_categoria(request):
+    # Primer grafico logica
+    publicaciones_por_categoria_query = Publicaciones.objects \
+                                                .values('categoria__nombre') \
+                                                .annotate(total=Count('id')) \
+                                                .order_by('categoria__nombre')
+
+    categoria_labels = []
+    categoria_data = []
+    categoria_colors = []
+    categoria_detalles = []
+
+    colores_base_categorias = [
+        'rgba(255, 99, 132, 0.7)',
+        'rgba(54, 162, 235, 0.7)',
+        'rgba(255, 206, 86, 0.7)',
+        'rgba(75, 192, 192, 0.7)',
+        'rgba(153, 102, 255, 0.7)',
+        'rgba(255, 159, 64, 0.7)',
+        'rgba(199, 199, 199, 0.7)',
+        'rgba(83, 102, 255, 0.7)',
+        'rgba(255, 59, 128, 0.7)',
+        'rgba(100, 200, 100, 0.7)',
+    ]
+
+    for i, item in enumerate(publicaciones_por_categoria_query):
+        label = item['categoria__nombre']
+        count = item['total']
+        categoria_labels.append(label)
+        categoria_data.append(count)
+        categoria_colors.append(colores_base_categorias[i % len(colores_base_categorias)])
+        categoria_detalles.append({'label': label, 'count': count})
+
+
+    # Para segundo grafico
+    current_year = timezone.now().year
+    publicaciones_por_mes_query = Publicaciones.objects.filter(
+        fecha_creacion__year=current_year
+    ).annotate(
+        month=ExtractMonth('fecha_creacion')
+    ).values('month').annotate(
+        count=Count('id')
+    ).order_by('month')
+
+    mes_labels = []
+    mes_data = []
+    mes_colors = []
+    mes_detalles = []
+
+    nombres_meses = {
+        1: 'Enero', 2: 'Febrero', 3: 'Marzo', 4: 'Abril',
+        5: 'Mayo', 6: 'Junio', 7: 'Julio', 8: 'Agosto',
+        9: 'Septiembre', 10: 'Octubre', 11: 'Noviembre', 12: 'Diciembre'
+    }
+
+    monthly_data_map = {item['month']: item['count'] for item in publicaciones_por_mes_query}
+
+    for i in range(1, 13):
+        label = nombres_meses.get(i, f'Mes {i}')
+        count = monthly_data_map.get(i, 0)
+        mes_labels.append(label)
+        mes_data.append(count)
+
+        r = random.randint(0, 255)
+        g = random.randint(0, 255)
+        b = random.randint(0, 255)
+        mes_colors.append(f'rgba({r}, {g}, {b}, 0.7)')
+        mes_detalles.append({'label': label, 'count': count})
+
+
+    context = {
+        # Datos para el gráfico de Categorías
+        'categoria_titulo_grafico': 'Publicaciones por Categoría',
+        'categoria_labels': categoria_labels,
+        'categoria_data': categoria_data,
+        'categoria_colors': categoria_colors,
+        'categoria_chart_id': 'publicacionesPorCategoriaChart',
+        'categoria_chart_type': 'bar',
+        'categoria_detalles': categoria_detalles,
+
+        # Datos para el gráfico de Meses
+        'mes_titulo_grafico': f'Publicaciones por Mes ({current_year})',
+        'mes_labels': mes_labels,
+        'mes_data': mes_data,
+        'mes_colors': mes_colors,
+        'mes_chart_id': 'publicacionesPorMesChart',
+        'mes_chart_type': 'pie',
+        'mes_detalles': mes_detalles,
+    }
+
+    return render(request, 'estadisticas_publicaciones_por_categoria.html', context)
+
+
+# USANDO OPENPYXL PARA EXPORTACION
+@login_required
+def exportar_estadisticas_excel(request):
+    # Crear un nuevo libro de trabajo de Excel
+    workbook = Workbook()
+
+    # --- Hoja 1: Publicaciones por Categoría ---
+    sheet_categoria = workbook.active
+    sheet_categoria.title = "Publicaciones por Categoría"
+
+    # Encabezados
+    headers_categoria = ["Categoría", "Total de Publicaciones"]
+    sheet_categoria.append(headers_categoria)
+
+    # Estilo para encabezados
+    header_font = Font(bold=True)
+    for cell in sheet_categoria[1]:
+        cell.font = header_font
+        cell.alignment = Alignment(horizontal="center", vertical="center")
+        cell.border = Border(left=Side(style='thin'), right=Side(style='thin'), top=Side(style='thin'), bottom=Side(style='thin'))
+
+    # Ancho de columnas
+    sheet_categoria.column_dimensions['A'].width = 30
+    sheet_categoria.column_dimensions['B'].width = 25
+
+    # Obtener datos de publicaciones por categoría (misma lógica que en la vista del dashboard)
+    publicaciones_por_categoria_query = Publicaciones.objects \
+                                                .values('categoria__nombre') \
+                                                .annotate(total=Count('id')) \
+                                                .order_by('categoria__nombre')
+
+    # Añadir datos a la hoja
+    for item in publicaciones_por_categoria_query:
+        sheet_categoria.append([item['categoria__nombre'], item['total']])
+        # Opcional: Estilo para las celdas de datos
+        for cell in sheet_categoria[sheet_categoria.max_row]:
+            cell.border = Border(left=Side(style='thin'), right=Side(style='thin'), top=Side(style='thin'), bottom=Side(style='thin'))
+
+
+    sheet_mes = workbook.create_sheet("Publicaciones por Mes")
+
+    headers_mes = ["Mes", "Total de Publicaciones"]
+    sheet_mes.append(headers_mes)
+
+    # Estilo para encabezados
+    for cell in sheet_mes[1]:
+        cell.font = header_font
+        cell.alignment = Alignment(horizontal="center", vertical="center")
+        cell.border = Border(left=Side(style='thin'), right=Side(style='thin'), top=Side(style='thin'), bottom=Side(style='thin'))
+
+    sheet_mes.column_dimensions['A'].width = 20
+    sheet_mes.column_dimensions['B'].width = 25
+
+    current_year = timezone.now().year
+    publicaciones_por_mes_query = Publicaciones.objects.filter(
+        fecha_creacion__year=current_year
+    ).annotate(
+        month=ExtractMonth('fecha_creacion')
+    ).values('month').annotate(
+        count=Count('id')
+    ).order_by('month')
+
+    nombres_meses = {
+        1: 'Enero', 2: 'Febrero', 3: 'Marzo', 4: 'Abril',
+        5: 'Mayo', 6: 'Junio', 7: 'Julio', 8: 'Agosto',
+        9: 'Septiembre', 10: 'Octubre', 11: 'Noviembre', 12: 'Diciembre'
+    }
+    monthly_data_map = {item['month']: item['count'] for item in publicaciones_por_mes_query}
+
+    for i in range(1, 13):
+        mes_nombre = nombres_meses.get(i, f'Mes {i}')
+        count = monthly_data_map.get(i, 0)
+        sheet_mes.append([mes_nombre, count])
+        for cell in sheet_mes[sheet_mes.max_row]:
+            cell.border = Border(left=Side(style='thin'), right=Side(style='thin'), top=Side(style='thin'), bottom=Side(style='thin'))
+
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = 'attachment; filename=estadisticas_publicaciones.xlsx'
+
+    workbook.save(response)
+    return response
