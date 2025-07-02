@@ -3,7 +3,6 @@ from django.shortcuts import render, redirect
 from django.contrib.messages import get_messages
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from publicaciones.forms import PublicacionForm, ComentarioForm
 
 def logear(request):
     if request.method == 'POST':
@@ -19,7 +18,7 @@ def logear(request):
             messages.error(request, 'Usuario o contraseña incorrectos')
     return render(request, 'login.html', {})
 
-
+@login_required
 def cerrar_sesion(request):
     logout(request)
     storage = get_messages(request)

@@ -52,12 +52,6 @@ class UsuarioCrearForm(UserCreationForm):
     password1 = forms.CharField(
         label='Contraseña',
         widget=forms.PasswordInput(attrs={'class': 'border border-gray-300 rounded p-2 w-full'}),
-        help_text=(
-            "Tu contraseña no puede parecerse a tu información personal.<br>"
-            "Debe tener al menos 8 caracteres.<br>"
-            "No puede ser una contraseña común.<br>"
-            "No puede ser completamente numérica."
-        )
     )
     password2 = forms.CharField(
         label='Confirmar contraseña',

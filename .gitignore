@@ -1,0 +1,25 @@
+# Bytecode de Python
+*.py[cod]
+_pycache_/
+*.so
+*.pyc
+
+# Archivos de bases de datos de Django
+*.sqlite3
+db.sqlite3
+
+# Archivos generados por Django
+media/
+*.log
+
+# Configuración local de VSCode
+.vscode/
+
+# Archivos del sistema operativo
+.DS_Store
+Thumbs.db
+
+# Entornos virtuales
+env/
+venv/
+ENV/
