@@ -6,21 +6,21 @@ class PublicacionForm(forms.ModelForm):
         model = Publicaciones
         fields = ['titulo', 'contenido', 'categoria']
         labels = {
-            'titulo': 'Título',
-            'contenido': 'Contenido',
-            'categoria': 'Categoría',
+            'titulo': '🎯 Título de la Publicación',
+            'contenido': '📄 Contenido',
+            'categoria': '🏷️ Categoría',
         }
         widgets = {
             'titulo': forms.TextInput(attrs={
-                'class': 'border border-gray-300 rounded-lg p-2 w-full',
-                'placeholder': 'Ingrese el título de la publicación'
+                'class': 'w-full px-4 py-2 border-2 border-gray-300 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-all duration-200 outline-none text-lg font-medium my-2 focus:bg-white',
+                'placeholder': 'Escribe un título atractivo y descriptivo...'
             }),
             'contenido': forms.Textarea(attrs={
-                'class': 'border border-gray-300 rounded-lg p-2 w-full',
+                'class': 'w-full px-4 py-2 border-2 border-gray-300 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-all duration-200 outline-none text-md my-2 focus:bg-white',
                 'placeholder': 'Ingrese el contenido de la publicación'
             }),
             'categoria': forms.Select(attrs={
-                'class': 'border border-gray-300 rounded-lg p-2 w-full'
+                'class': 'w-full px-4 py-2 border-2 border-gray-300 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-all duration-200 outline-none text-md  my-2 focus:bg-white'                
             }),
         }
 
