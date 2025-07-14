@@ -75,7 +75,6 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        // Función para leer los datos del script JSON y parsearlos
         function getChartDataFromScript(scriptId) {
             const scriptElement = document.getElementById(scriptId);
             if (scriptElement) {
@@ -90,7 +89,6 @@
             return [];
         }
 
-        // Datos para el gráfico de Categorías
         const categoriaChartInfo = {
             id: "{{ categoria_chart_id }}",
             type: "{{ categoria_chart_type }}",
@@ -100,7 +98,6 @@
             colors: getChartDataFromScript("categoria_colors_json")
         };
 
-        // Datos para el gráfico de Meses
         const mesChartInfo = {
             id: "{{ mes_chart_id }}",
             type: "{{ mes_chart_type }}",
@@ -110,7 +107,6 @@
             colors: getChartDataFromScript("mes_colors_json")
         };
 
-        // Función para inicializar un gráfico de Chart.js
         function initializeChart(chartInfo) {
             const ctx = document.getElementById(chartInfo.id);
             if (!ctx) {
@@ -118,7 +114,6 @@
                 return;
             }
 
-            // Determinar el label del dataset basado en el tipo de gráfico
             let datasetLabel = chartInfo.title;
             if (chartInfo.type === 'bar') {
                 datasetLabel = '';
