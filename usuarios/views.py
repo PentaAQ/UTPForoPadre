@@ -56,6 +56,13 @@ def eliminar_usuario(request, pk):
     messages.success(request, "Usuario eliminado.")
     return redirect("lista_usuarios")
 
+def desactivar_usuario(request, pk):
+    usuario = get_object_or_404(Usuario, pk=pk)
+    usuario.is_active = False
+    usuario.save()
+    messages.success(request, "Usuario desactivado.")
+    return redirect("lista_usuarios")
+
 @login_required
 def configuracion_cuenta(request):
     if request.method == "POST":
