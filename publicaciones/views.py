@@ -107,7 +107,7 @@ def nueva_categoria(request):
             categoria = form.save(commit=False)
             categoria.save()
             messages.success(request, "Categoria creada exitosamente")
-            return redirect("home")
+            return redirect("lista_categorias")
         else:
             messages.error(
                 request,

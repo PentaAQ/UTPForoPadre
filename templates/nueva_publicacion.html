@@ -1,15 +1,21 @@
-{% extends 'index.html' %} 
-{% block content %}
+{% extends 'index.html' %} {% block content %}
 <div class="w-screen h-screen flex">
   <div class="w-auto">{% include 'navbar.html' %}</div>
-  <main class="flex flex-col items-center justify-center w-full p-6 bg-gray-100">
-    <form action="{% url 'nueva_publicacion' %}" method="post">
-      {% csrf_token %}
-      {{ form.as_p }}
-      <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">
-        Crear publicación
-      </button>
-    </form>
+  <main
+    class="flex flex-col items-center justify-center w-full p-6 bg-gray-100"
+  >
+    <div class="shadow-2xl w-[50%] p-4 rounded-2xl ">
+      <form action="{% url 'nueva_publicacion' %}" method="post">
+        {% csrf_token %} {{ form.as_p }}
+        <button
+          type="submit"
+          class="mx-auto my-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-4 px-6 rounded-xl transition-all duration-200 transform hover:scale-105 shadow-lg flex items-center justify-center gap-2 w-[80%]"
+        >
+          <span>🚀</span>
+          <span>Publicar Ahora</span>
+        </button>
+      </form>
+    </div>
   </main>
 </div>
 {% endblock %}
