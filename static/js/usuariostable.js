@@ -4,9 +4,19 @@ function confirmDelete(userName, deleteUrl) {
     document.getElementById("deleteModal").classList.remove("hidden");
   }
 
-  function closeDeleteModal() {
+function closeDeleteModal() {
     document.getElementById("deleteModal").classList.add("hidden");
   }
+
+function confirmDesactivar(userN, desactivarUrl) {
+    document.getElementById("userN").textContent = userN;
+    document.getElementById("desactivarLink").href = desactivarUrl;
+    document.getElementById("desactivarUModal").classList.remove("hidden");
+  }
+function closeDesactivarUModal() {
+    document.getElementById("desactivarUModal").classList.add("hidden");
+  }
+
 
   document
     .getElementById("deleteModal")
