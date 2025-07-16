@@ -3,7 +3,7 @@ from usuarios.models import Usuario
 
 class Categorias(models.Model):
     nombre = models.CharField(max_length=100)
-    
+    fec_cre = models.DateTimeField(auto_now_add=True)
     def __str__(self):
         return self.nombre
 

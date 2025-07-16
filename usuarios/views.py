@@ -131,6 +131,6 @@ def subir_csv(request):
         except Exception as e:
             messages.error(request, f"Error al procesar archivo: {e}")
 
-        return redirect("subir_csv")
+        return redirect("lista_usuarios")
 
     return render(request, "subircsv.html")

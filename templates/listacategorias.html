@@ -88,7 +88,7 @@
               <div>
                 <p class="text-sm font-medium text-gray-600">Promedio Posts</p>
                 <p class="text-3xl font-bold text-amber-600">
-                  {% if categorias %}{{ categorias|length|add:"15"|floatformat:0 }}{% else %}0{% endif %}
+                  {% if categorias %}{{ promedio|floatformat:0 }}{% else %}0{% endif %}
                 </p>
                 <p class="text-sm text-amber-600 flex items-center gap-1 mt-1">
                   <span>📝</span>
@@ -162,9 +162,9 @@
                   {% elif categoria.nombre == 'Música' %}🎵
                   {% else %}📂{% endif %}
                 </span>
-                <span class="text-xs bg-white/20 px-2 py-1 rounded-full">ID: {{ categoria.id }}</span>
+                <span class="text-xs bg-white/20 px-2 py-1 rounded-full">ID: {{ categoria.cat.id }}</span>
               </div>
-              <h3 class="text-xl font-bold mb-1">{{ categoria.nombre }}</h3>
+              <h3 class="text-xl font-bold mb-1">{{ categoria.cat.nombre }}</h3>
               <p class="text-purple-100 text-sm">Categoría activa</p>
             </div>
           </div>
@@ -172,11 +172,11 @@
           <div class="p-6">
             <div class="grid grid-cols-2 gap-4 mb-6">
               <div class="text-center p-3 bg-gray-50 rounded-lg">
-                <p class="text-2xl font-bold text-gray-900">{{ forloop.counter }}</p>
+                <p class="text-2xl font-bold text-gray-900">{{ categoria.total }}</p>
                 <p class="text-xs text-gray-600">Publicaciones</p>
               </div>
               <div class="text-center p-3 bg-gray-50 rounded-lg">
-                <p class="text-2xl font-bold text-purple-600">{{ forloop.counter|add:"5" }}</p>
+                <p class="text-2xl font-bold text-purple-600">{{ categoria.esta_semana }}</p>
                 <p class="text-xs text-gray-600">Esta semana</p>
               </div>
             </div>
@@ -191,16 +191,16 @@
               </div>
               <div class="flex items-center justify-between text-sm">
                 <span class="text-gray-600">Creada:</span>
-                <span class="text-gray-900">{{ forloop.counter }} días atrás</span>
+                <span class="text-gray-900">{{ categoria.cat.fec_cre|timesince }} días atrás</span>
               </div>
               <div class="flex items-center justify-between text-sm">
                 <span class="text-gray-600">Popularidad:</span>
                 <div class="flex items-center gap-1">
-                  {% for i in "12345" %}
-                    {% if forloop.counter <= 3 %}
-                    <span class="text-yellow-400">⭐</span>
+                  {% for i in "12345"|slice:":" %}
+                    {% if forloop.counter <= categoria.estrellas %}
+                      ⭐
                     {% else %}
-                    <span class="text-gray-300">⭐</span>
+                      ☆
                     {% endif %}
                   {% endfor %}
                 </div>
@@ -209,15 +209,15 @@
             
             <div class="flex gap-2">
               <a
-                href="{% url 'editar_categoria' categoria.id %}"
+                href="{% url 'editar_categoria' categoria.cat.pk %}"
                 class="flex-1 bg-blue-50 hover:bg-blue-100 text-blue-700 font-medium py-2 px-4 rounded-lg transition-colors text-center text-sm flex items-center justify-center gap-1"
               >
                 <span>✏️</span>
                 <span>Editar</span>
               </a>
               <button
-                data-name="{{ categoria.nombre }}"
-                data-url="{% url 'eliminar_categoria' categoria.id %}"
+                data-name="{{ categoria.cat.nombre }}"
+                data-url="{% url 'eliminar_categoria' categoria.cat.id %}"
                 onclick="confirmDelete(this.dataset.name, this.dataset.url)"
                 class="flex-1 bg-red-50 hover:bg-red-100 text-red-700 font-medium py-2 px-4 rounded-lg transition-colors text-center flex items-center justify-center gap-1"
                 title="Eliminar categoría"
@@ -291,7 +291,7 @@
                 <td class="px-6 py-4 whitespace-nowrap">
                   <div class="flex items-center gap-2">
                     <a
-                      href="{% url 'editar_categoria' categoria.id %}"
+                      href="{% url 'editar_categoria' categoria.cat.pk %}"
                       class="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200"
                       title="Editar categoría"
                     >
@@ -299,7 +299,7 @@
                     </a>
                     <button
                       data-name="{{ categoria.nombre }}"
-                      data-url="{% url 'eliminar_categoria' categoria.id %}"
+                      data-url="{% url 'eliminar_categoria' categoria.cat.id %}"
                       onclick="confirmDelete(this.dataset.name, this.dataset.url)"
                       class="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200"
                       title="Eliminar categoría"

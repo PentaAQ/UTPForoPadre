@@ -9,10 +9,12 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Count
 from django.db.models.functions import ExtractMonth
 from django.utils import timezone
+from datetime import timedelta
 from django.http import HttpResponse
 from openpyxl import Workbook
 from openpyxl.styles import Font, Alignment, Border, Side
 import random
+
 
 
 class PublicacionesListView(LoginRequiredMixin, ListView):
@@ -98,7 +100,25 @@ class MisPublicacionesListView(LoginRequiredMixin, ListView):
 @login_required
 def lista_categorias(request):
     categorias = Categorias.objects.all()
-    return render(request, "listacategorias.html", {"categorias": categorias})
+    datos = []
+    inicio_semana = timezone.now() - timedelta(days=timezone.now().weekday())
+    for categoria in categorias:
+        total = categoria.publicaciones_set.count()
+        esta_semana = categoria.publicaciones_set.filter(fecha_creacion__gte=inicio_semana).count()
+        if total >= 10:
+            estrellas = 5
+        else:
+            estrellas = max(1, total // 2)  
+        datos.append({
+            'cat': categoria,
+            'total': total,
+            'esta_semana': esta_semana,
+            'estrellas': estrellas,
+        })
+    totales = sum(item['total'] for item in datos)
+    num_categorias = len(datos)
+    promedio = totales / num_categorias if num_categorias > 0 else 0
+    return render(request, "listacategorias.html", {"categorias": datos, "promedio": promedio})
 
 
 @login_required
