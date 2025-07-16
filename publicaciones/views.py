@@ -1,9 +1,8 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404, redirect
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from .models import Publicaciones, Categorias
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.shortcuts import get_object_or_404, redirect
 from .forms import ComentarioForm, PublicacionForm, CategoriaForm
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -38,7 +37,7 @@ class PublicacionesListView(LoginRequiredMixin, ListView):
         return context
 
 
-class ProductDetailView(DetailView):
+class ProductDetailView(LoginRequiredMixin,DetailView):
     template_name = "publicacion.html"
     model = Publicaciones
     context_object_name = "publicacion"
@@ -63,6 +62,7 @@ class ProductDetailView(DetailView):
             messages.error(request, "Error al agregar el comentario.")
             return self.render_to_response(self.get_context_data(form=form))
 
+
 @login_required
 def nueva_publicacion(request):
     form = PublicacionForm(request.POST or None)
@@ -72,7 +72,7 @@ def nueva_publicacion(request):
             publicacion.autor = request.user
             publicacion.save()
             messages.success(request, "Publicación creada exitosamente")
-            return redirect("home")
+            return redirect("mispublicaciones")
         else:
             messages.error(
                 request,
@@ -94,10 +94,12 @@ class MisPublicacionesListView(LoginRequiredMixin, ListView):
         context["mensaje"] = "Mis publicaciones"
         return context
 
+
 @login_required
 def lista_categorias(request):
     categorias = Categorias.objects.all()
     return render(request, "listacategorias.html", {"categorias": categorias})
+
 
 @login_required
 def nueva_categoria(request):
@@ -114,6 +116,7 @@ def nueva_categoria(request):
                 "Error al crear la categoria. Por favor, revisa los datos ingresados.",
             )
     return render(request, "formscategorias.html", {"form": form, "accion": "Crear"})
+
 
 @login_required
 def editar_categoria(request, pk):
@@ -132,6 +135,7 @@ def editar_categoria(request, pk):
     else:
         form = CategoriaForm(instance=categoria)
     return render(request, "formscategorias.html", {"form": form, "accion": "Editar"})
+
 
 @login_required
 def eliminar_categoria(request, pk):
@@ -243,12 +247,11 @@ def estadisticas_publicaciones_por_categoria(request):
     return render(request, "estadisticas_publicaciones_por_categoria.html", context)
 
 
-
 @login_required
 def exportar_estadisticas_excel(request):
-    
+
     workbook = Workbook()
-    
+
     sheet_categoria = workbook.active
     sheet_categoria.title = "Publicaciones por Categoría"
 

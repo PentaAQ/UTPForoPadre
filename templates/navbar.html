@@ -2,7 +2,7 @@
 {% url 'cerrar_sesion' as cerrarsesion %}
 {% url 'home' as home %}
 {% url 'mispublicaciones' as mispublicaciones %}
-{% url 'configuracionusuario' as configuracionusuario %}
+{% url 'configuracion_cuenta' as configuracion_cuenta %}
 {% url 'lista_usuarios' as gestionusuarios %}
 {% url 'lista_categorias' as lista_categorias %}
 
@@ -83,7 +83,7 @@
           </a>
 
           <a
-            href="{{ configuracionusuario }}"
+            href="{{ configuracion_cuenta }}"
             class="group flex items-center px-3 py-3 text-sm font-medium text-slate-300 rounded-xl hover:bg-slate-700/50 hover:text-white transition-all duration-200 relative overflow-hidden"
           >
             <div class="absolute inset-0 bg-gradient-to-r from-blue-600/0 to-blue-600/0 group-hover:from-blue-600/10 group-hover:to-purple-600/10 transition-all duration-200"></div>
@@ -164,11 +164,11 @@
       </div>
     </div>
 
-    <div class="fixed inset-0 bg-black bg-opacity-50 z-20 md:hidden hidden" id="sidebar-overlay"></div>
+    <div class="fixed inset-0 bg-white/40 bg-opacity-50 z-20 md:hidden hidden" id="sidebar-overlay"></div>
 
     <button
       id="sidebar-toggle"
-      class="fixed top-4 left-4 z-40 md:hidden bg-slate-800 text-white p-2 rounded-lg shadow-lg hover:bg-slate-700 transition-colors"
+      class="fixed top-4 left-4 z-40 md:hidden bg-slate-800 text-white p-2 rounded-sm shadow-lg hover:bg-slate-700 transition-colors"
     >
       <span class="text-xl">☰</span>
     </button>

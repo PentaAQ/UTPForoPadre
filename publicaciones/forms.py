@@ -37,7 +37,7 @@ class ComentarioForm(forms.ModelForm):
             }),
         }
         labels = {
-            'contenido': ''
+            'contenido': '💬 Agrega tu Contenido '
         }
 
 class CategoriaForm(forms.ModelForm):
@@ -45,11 +45,11 @@ class CategoriaForm(forms.ModelForm):
         model = Categorias
         fields = ['nombre']
         labels = {
-            'nombre': 'nombre',
+            'nombre': '📚 Ingresa el nombre la nueva categoria',
         }
         widgets = {
             'nombre': forms.TextInput(attrs={
-                'class': 'border border-gray-300 rounded-lg p-2 w-full',
+                'class': 'border border-gray-300 rounded-lg p-2 w-full mt-2 focus:outline-none',
                 'placeholder': 'Ingrese el nombre de la categoría'
             }),
         }
