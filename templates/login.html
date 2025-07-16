@@ -7,13 +7,7 @@
     class="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none"
   >
     <div
-      class="absolute top-20 left-10 w-32 h-32 bg-purple-200 rounded-full opacity-20 animate-pulse"
-    ></div>
-    <div
       class="absolute top-40 right-20 w-24 h-24 bg-blue-200 rounded-full opacity-30 animate-bounce"
-    ></div>
-    <div
-      class="absolute bottom-20 left-1/4 w-16 h-16 bg-indigo-200 rounded-full opacity-25"
     ></div>
     <div
       class="absolute bottom-40 right-10 w-20 h-20 bg-purple-300 rounded-full opacity-20"
@@ -24,8 +18,6 @@
     <div
       class="hidden lg:flex items-center justify-center bg-white relative"
     >
-      
-
       <div class="text-center text-white space-y-8 px-8">
         <div class="relative">
           <img
@@ -33,15 +25,6 @@
             alt="Logo UTP"
             class="mx-auto w-full  rounded-lg"
           />
-          <div class="absolute -inset-4 bg-white/10 rounded-xl blur-xl"></div>
-        </div>
-
-        
-
-        <div class="flex justify-center space-x-2 pt-8">
-          <div class="w-2 h-2 bg-white rounded-full"></div>
-          <div class="w-2 h-2 bg-white/60 rounded-full"></div>
-          <div class="w-2 h-2 bg-white/30 rounded-full"></div>
         </div>
       </div>
     </div>
@@ -155,24 +138,6 @@
                 <span>Ingresar</span>
               </span>
             </button>
-
-            {% for m in messages %} {% if m.tag != 'success' %}
-            <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded-r-lg">
-              <div class="flex items-center">
-                <span class="text-red-500 mr-2">⚠️</span>
-                <p class="text-red-700 font-medium">{{ m }}</p>
-              </div>
-            </div>
-            {% elif m.tag == 'success' %}
-            <div
-              class="bg-green-50 border-l-4 border-green-500 p-4 rounded-r-lg"
-            >
-              <div class="flex items-center">
-                <span class="text-green-500 mr-2">✅</span>
-                <p class="text-green-700 font-medium">{{ m }}</p>
-              </div>
-            </div>
-            {% endif %} {% endfor %}
           </form>
         </div>
 
@@ -201,13 +166,6 @@
     </div>
   </div>
 
-  <div class="lg:hidden absolute top-4 left-4 z-20">
-    <img
-      src="{% static 'img/utplogo.jpg' %}"
-      alt="Logo UTP"
-      class="h-12 w-auto rounded-lg shadow-lg"
-    />
-  </div>
 </div>
 
 {% endblock %}

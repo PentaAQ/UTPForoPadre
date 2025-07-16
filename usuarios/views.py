@@ -7,7 +7,7 @@ from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth import update_session_auth_hash
 import csv
 
-
+@login_required
 def lista_usuarios(request):
     usuarios = Usuario.objects.all()
     usuarios_activos = usuarios.filter(is_active=True).count()
@@ -24,7 +24,7 @@ def lista_usuarios(request):
         },
     )
 
-
+@login_required
 def crear_usuario(request):
     if request.method == "POST":
         form = UsuarioCrearForm(request.POST)
@@ -36,7 +36,7 @@ def crear_usuario(request):
         form = UsuarioCrearForm()
     return render(request, "formusuarios.html", {"form": form, "accion": "Crear"})
 
-
+@login_required
 def editar_usuario(request, pk):
     usuario = get_object_or_404(Usuario, pk=pk)
     if request.method == "POST":
@@ -49,13 +49,13 @@ def editar_usuario(request, pk):
         form = UsuarioEditarForm(instance=usuario)
     return render(request, "formusuarios.html", {"form": form, "accion": "Editar"})
 
-
+@login_required
 def eliminar_usuario(request, pk):
     usuario = get_object_or_404(Usuario, pk=pk)
     usuario.delete()
     messages.success(request, "Usuario eliminado.")
     return redirect("lista_usuarios")
-
+@login_required
 def desactivar_usuario(request, pk):
     usuario = get_object_or_404(Usuario, pk=pk)
     usuario.is_active = False
@@ -83,7 +83,7 @@ def configuracion_cuenta(request):
 
 
 
-
+@login_required
 def subir_csv(request):
     if request.method == "POST":
         archivo = request.FILES.get("archivo_csv")

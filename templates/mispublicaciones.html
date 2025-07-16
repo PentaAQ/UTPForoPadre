@@ -1,6 +1,7 @@
 {% extends 'index.html' %}
 {% block content %}
 {% url 'nueva_publicacion' as nueva_publicacion %}
+{% url 'mispublicaciones' as mispublicaciones %}
 
 <div class="w-screen h-screen flex bg-gradient-to-br from-gray-50 to-gray-100">
   
@@ -146,12 +147,6 @@
       </div>
       {% endfor %}
 
-      <div class="mt-8">
-        <button class="bg-white hover:bg-gray-50 text-gray-700 font-semibold py-3 px-8 rounded-xl border border-gray-200 hover:border-gray-300 transition-all duration-200 shadow-sm hover:shadow-md flex items-center gap-2">
-          <span>📄</span>
-          <span>Cargar más publicaciones</span>
-        </button>
-      </div>
 
     {% else %}
       <div class="text-center py-16 max-w-md">
@@ -188,9 +183,9 @@
     {% endif %}
 
     <div class="fixed bottom-8 right-8 z-40">
-      <button class="w-12 h-12 bg-white/80 backdrop-blur-sm hover:bg-white text-gray-600 hover:text-gray-900 rounded-full shadow-lg border border-gray-200 transition-all duration-200 hover:scale-110 flex items-center justify-center">
+      <a href="{{ mispublicaciones }}" class="w-12 h-12 bg-white/80 backdrop-blur-sm hover:bg-white text-gray-600 hover:text-gray-900 rounded-full shadow-lg border border-gray-200 transition-all duration-200 hover:scale-110 flex items-center justify-center">
         <span class="text-lg">↑</span>
-      </button>
+      </a>
     </div>
   </main>
 </div>
