@@ -58,9 +58,14 @@ def eliminar_usuario(request, pk):
 @login_required
 def desactivar_usuario(request, pk):
     usuario = get_object_or_404(Usuario, pk=pk)
-    usuario.is_active = False
+    if (usuario.is_active == True):
+        usuario.is_active = False   
+        accion = "desactivado"
+    else:
+        usuario.is_active = True
+        accion = "activado"  
     usuario.save()
-    messages.success(request, "Usuario desactivado.")
+    messages.success(request, f"Usuario {accion}.")
     return redirect("lista_usuarios")
 
 @login_required

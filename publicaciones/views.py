@@ -102,9 +102,11 @@ def lista_categorias(request):
     categorias = Categorias.objects.all()
     datos = []
     inicio_semana = timezone.now() - timedelta(days=timezone.now().weekday())
+    inicio_mes = timezone.now().replace(day=1, hour=0, minute=0, second=0, microsecond=0)
     for categoria in categorias:
         total = categoria.publicaciones_set.count()
         esta_semana = categoria.publicaciones_set.filter(fecha_creacion__gte=inicio_semana).count()
+        categorias_este_mes = Categorias.objects.filter(fec_cre__gte=inicio_mes).count()
         if total >= 10:
             estrellas = 5
         else:
@@ -118,7 +120,10 @@ def lista_categorias(request):
     totales = sum(item['total'] for item in datos)
     num_categorias = len(datos)
     promedio = totales / num_categorias if num_categorias > 0 else 0
-    return render(request, "listacategorias.html", {"categorias": datos, "promedio": promedio})
+    mas_popular = max(datos, key=lambda x: x['total'], default=None)
+    categoria_mas_popular_nombre = mas_popular['cat'].nombre
+    categoria_mas_popular_total = mas_popular['total']
+    return render(request, "listacategorias.html", {"categorias": datos, "promedio": promedio, "categorias_este_mes": categorias_este_mes,  "categoria_mas_popular_nombre": categoria_mas_popular_nombre,"categoria_mas_popular_total": categoria_mas_popular_total,})
 
 
 @login_required
