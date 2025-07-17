@@ -88,12 +88,18 @@ def configuracion_cuenta(request):
 
 
 
+import csv
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import redirect, render
+from .models import Usuario  # Asegúrate de importar tu modelo
+
 @login_required
 def subir_csv(request):
     if request.method == "POST":
         archivo = request.FILES.get("archivo_csv")
 
-        if not archivo.name.endswith(".csv"):
+        if not archivo or not archivo.name.endswith(".csv"):
             messages.error(request, "El archivo debe ser formato .csv")
             return redirect("subir_csv")
 
@@ -102,35 +108,44 @@ def subir_csv(request):
             reader = csv.DictReader(datos)
             creados = 0
             repetidos = 0
+            errores = 0
 
             for fila in reader:
-                codigo = fila["codigo"].strip()
-                nombre = fila["nombres"].strip()
-                apellido = fila["apellidos"].strip()
-                correo = fila["correo"].strip()
-                dni = fila["dni"].strip()
+                try:
+                    codigo = fila.get("codigo", "").strip()
+                    nombre = fila.get("nombres", "").strip()
+                    apellido = fila.get("apellidos", "").strip()
+                    correo = fila.get("correo", "").strip()
+                    dni = fila.get("dni", "").strip()
 
-                if (
-                    Usuario.objects.filter(username=codigo).exists()
-                    or Usuario.objects.filter(email=correo).exists()
-                ):
-                    repetidos += 1
-                    continue
+                    if not codigo or not correo or not dni:
+                        errores += 1
+                        continue
 
-                usuario = Usuario.objects.create_user(
-                    username=codigo,
-                    dni=dni,
-                    first_name=nombre,
-                    last_name=apellido,
-                    email=correo,
-                    password=dni,
-                )
-                usuario.is_active = True
-                usuario.save()
-                creados += 1
+                    if Usuario.objects.filter(username=codigo).exists() or Usuario.objects.filter(email=correo).exists():
+                        repetidos += 1
+                        continue
+
+                    # Crear usuario nuevo
+                    usuario = Usuario.objects.create_user(
+                        username=codigo,
+                        dni=dni,
+                        first_name=nombre,
+                        last_name=apellido,
+                        email=correo,
+                        password=dni, 
+                    )
+                    usuario.is_active = True
+                    usuario.save()
+                    creados += 1
+
+                except Exception:
+                    errores += 1
+                    continue 
 
             messages.success(
-                request, f"{creados} usuarios creados. {repetidos} ya existían."
+                request,
+                f"{creados} usuarios creados. {repetidos} ya existían. {errores} con errores en los datos."
             )
 
         except Exception as e:
