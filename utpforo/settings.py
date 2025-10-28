@@ -11,6 +11,9 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['utpforopadre.onrender.com']
 
+CSRF_TRUSTED_ORIGINS = [
+    'https://utpforopadre.onrender.com',
+]
 
 INSTALLED_APPS = [
     'django.contrib.admin',
