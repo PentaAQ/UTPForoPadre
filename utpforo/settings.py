@@ -9,7 +9,7 @@ SECRET_KEY = 'django-insecure-fgcx+3mmlf%d1(4%5+z3&h7uf%_+6ttg%9z$$*wi6&a-s+7*@6
 
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['utpforopadre.onrender.com']
 
 
 INSTALLED_APPS = [
